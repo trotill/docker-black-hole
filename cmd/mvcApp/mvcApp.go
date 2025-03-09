@@ -25,6 +25,7 @@ import (
 	_ "github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 //TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
@@ -39,5 +40,6 @@ func main() {
 	ginCtx := gin.Default()
 	swagger.Controller(ginCtx)
 	app.Controller(ginCtx)
-	ginCtx.Run(":9080")
+	port := os.Getenv("PORT")
+	ginCtx.Run(":" + port)
 }
