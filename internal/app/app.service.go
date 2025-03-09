@@ -1,11 +1,11 @@
 package app
 
 import (
+	"docker-black-hole/internal/utils"
+	"encoding/json"
 	"fmt"
 	"github.com/doug-martin/goqu/v9"
 	"github.com/fatih/structs"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"time"
 )
 
@@ -56,19 +56,60 @@ func GetAllUsers(db *goqu.Database) map[string]interface{} {
 	return structs.Map(UsersResponseStruct{Count: uint32(count), Items: usersDbResult})
 }
 
-type JobRequestJob struct {
-	Action    string   `json:"action"`
-	Arguments []string `json:"arguments"`
-	Type      string   `json:"type"`
-	Timeout   uint32   `json:"timeout"`
+type JobRequest struct {
+	Id        string   `json:"id" binding:"required,min=2,max=100"`
+	Action    string   `json:"action" binding:"required,min=1,max=2048"`
+	Arguments []string `json:"arguments" binding:"required,dive,min=2,max=100"`
+	Type      string   `json:"type" enums:"embedded,related,absolute" binding:"required,oneof=embedded related absolute"`
+	Timeout   uint32   `json:"timeout" default:"1000" binding:"required"`
 }
 
-func SetJob(ctx *gin.Context) {
-	var json JobRequestJob
-	if err := ctx.ShouldBindBodyWithJSON(&json); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+type JobError struct {
+	Code        string `json:"code"`
+	Description string `json:"description"`
+}
+type JobResponse struct {
+	Status string    `json:"status" enums:"run,error,finish"`
+	Error  *JobError `json:"error,omitempty"`
+}
+
+type JobListItem struct {
+	Id        string       `json:"id"`
+	Payload   *JobRequest  `json:"payload"`
+	Result    *JobResponse `json:"result"`
+	CreatedAt int64        `json:"created_at"`
+}
+
+var jobList = []JobListItem{}
+
+func FindJobById(jobList []JobListItem, id string) *JobListItem {
+	for _, job := range jobList {
+		if job.Id == id {
+			return &job
+		}
 	}
-	fmt.Printf("json %+v\n", json)
+	return nil
+}
+
+func GetJob(id string) *JobListItem {
+	fmt.Println("GetJob", id)
+	foundJob := FindJobById(jobList, id)
+	DumpJobList()
+	if foundJob == nil {
+		return nil
+	}
+	return foundJob
+}
+func DumpJobList() {
+	js, _ := json.Marshal(jobList)
+	fmt.Printf("json %+v\n", string(js))
+}
+func SetJob(job *JobRequest) bool {
+	foundJob := FindJobById(jobList, job.Id)
+	if foundJob == nil {
+		jobList = append(jobList, JobListItem{Id: job.Id, Payload: job, CreatedAt: utils.GetUnixTimestamp()})
+		return true
+	}
+	return false
 	//c.JSON(http.StatusOK, gin.H{"id": id})
 }

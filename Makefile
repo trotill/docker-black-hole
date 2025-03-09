@@ -32,25 +32,10 @@ run: build
 .PHONY: run/live
 run/live:
 	bin/air \
-	--build.cmd "make build" --build.bin "/tmp/bin/${binary_name}" --build.delay "100" \
+	--build.cmd "make build" --build.bin "./bin/${binary_name}" --build.delay "100" \
 	--build.exclude_dir "" \
 	--build.include_ext "go, tpl, tmpl, html, css, scss, js, ts, sql, jpeg, jpg, gif, png, bmp, svg, webp, ico" \
 	--misc.clean_on_exit "true"
-
-## migration.example: example write migration
-.PHONY: migration.example
-migration.example:
-	goose create -dir internal/db/migrations create_table sql
-
-## migrations.dev: run migration
-.PHONY: migrations.dev
-migrations.dev:
-	goose -dir ./internal/db/migrations up
-
-## seed.dev: run seed
-.PHONY: seed.dev
-seed.dev:
-	goose -dir ./internal/db/seed up
 
 ## up.dev: run docker compose
 .PHONY: up.dev
@@ -69,4 +54,6 @@ tidy:
 
 ## generate swagger
 .PHONY: swagger
-swagger: swag init -g cmd/mvcApp
+swagger:
+	swag init -g cmd/mvcApp/mvcApp.go
+

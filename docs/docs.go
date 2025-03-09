@@ -24,9 +24,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/app": {
-            "get": {
-                "description": "Returns app",
+        "/job": {
+            "post": {
+                "description": "Returns job id",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,28 +34,60 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "app"
+                    "job"
                 ],
-                "summary": "Get app",
+                "summary": "Run job",
                 "parameters": [
                     {
-                        "description": "Users request with filter",
+                        "description": "Job request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/app.UsersGetAllRequest"
+                            "$ref": "#/definitions/app.JobRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HttpError"
+                        }
+                    }
+                }
+            }
+        },
+        "/job/{id}": {
+            "get": {
+                "description": "Returns job info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "job"
+                ],
+                "summary": "Get job",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Job id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/app.JobListItem"
                         }
                     }
                 }
@@ -63,29 +95,100 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "app.UsersGetAllRequest": {
+        "app.JobError": {
             "type": "object",
             "properties": {
-                "filter": {
-                    "type": "object",
-                    "properties": {
-                        "ids": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "name": {
-                            "type": "string"
-                        }
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.JobListItem": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "payload": {
+                    "$ref": "#/definitions/app.JobRequest"
+                },
+                "result": {
+                    "$ref": "#/definitions/app.JobResponse"
+                }
+            }
+        },
+        "app.JobRequest": {
+            "type": "object",
+            "required": [
+                "action",
+                "arguments",
+                "id",
+                "timeout",
+                "type"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "minLength": 1
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 },
-                "limit": {
-                    "type": "integer"
+                "id": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
                 },
-                "offset": {
-                    "type": "integer"
+                "timeout": {
+                    "type": "integer",
+                    "default": 1000
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "embedded",
+                        "related",
+                        "absolute"
+                    ]
                 }
+            }
+        },
+        "app.JobResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/app.JobError"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "run",
+                        "error",
+                        "finish"
+                    ]
+                }
+            }
+        },
+        "utils.HttpError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "validation": {}
             }
         }
     }

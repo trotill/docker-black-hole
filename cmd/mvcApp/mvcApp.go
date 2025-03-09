@@ -17,13 +17,13 @@ package main
 
 import (
 	//"github.com/doug-martin/goqu/v9"
-	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
+	_ "docker-black-hole/docs"
+	"docker-black-hole/internal/app"
+	"docker-black-hole/internal/swagger"
 	"github.com/gin-gonic/gin"
+	_ "github.com/gin-gonic/gin/binding"
+	_ "github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
-	_ "go-rest-template/docs"
-	"go-rest-template/internal/app"
-	"go-rest-template/internal/swagger"
 	"log"
 )
 
