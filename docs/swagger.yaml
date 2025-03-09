@@ -1,0 +1,57 @@
+basePath: /
+definitions:
+  users.UsersGetAllRequest:
+    properties:
+      filter:
+        properties:
+          ids:
+            items:
+              type: string
+            type: array
+          name:
+            type: string
+        type: object
+      limit:
+        type: integer
+      offset:
+        type: integer
+    type: object
+host: localhost:9080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample API with Swagger documentation.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: My API
+  version: "1.0"
+paths:
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Returns app
+      parameters:
+      - description: Users request with filter
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/users.UsersGetAllRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get app
+      tags:
+      - app
+swagger: "2.0"
