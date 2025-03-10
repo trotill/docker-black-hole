@@ -1,6 +1,7 @@
 package app
 
 import (
+	"docker-black-hole/internal/types"
 	"docker-black-hole/internal/utils"
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gin-gonic/gin"
@@ -22,12 +23,12 @@ func getUsersHandler(ctx *gin.Context, db *goqu.Database) {
 // @Tags         job
 // @Accept       json
 // @Produce      json
-// @Param        request  body  JobRequest  true  "Job request"
+// @Param        request  body  types.JobRequest  true  "Job request"
 // @Success      201
 // @Failure      409 {object} utils.HttpError
 // @Router       /job [post]
 func SetJobController(ctx *gin.Context) {
-	var json JobRequest
+	var json types.JobRequest
 	if err := ctx.ShouldBindBodyWithJSON(&json); err != nil {
 		utils.ErrorResponse(ctx, http.StatusBadRequest, utils.HttpError{Code: "validation", Description: "validation error", Validation: err})
 		return
@@ -47,7 +48,7 @@ func SetJobController(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id  path  string  true  "Job id"
-// @Success      200  {object} JobListItem
+// @Success      200  {object} types.JobListItem
 // @Router       /job/{id} [get]
 func GetJobController(ctx *gin.Context) {
 	id := ctx.Param("id")

@@ -1,6 +1,8 @@
 package app
 
 import (
+	"docker-black-hole/internal/routine"
+	"docker-black-hole/internal/types"
 	"docker-black-hole/internal/utils"
 	"encoding/json"
 	"fmt"
@@ -56,33 +58,9 @@ func GetAllUsers(db *goqu.Database) map[string]interface{} {
 	return structs.Map(UsersResponseStruct{Count: uint32(count), Items: usersDbResult})
 }
 
-type JobRequest struct {
-	Id        string   `json:"id" binding:"required,min=2,max=100"`
-	Action    string   `json:"action" binding:"required,min=1,max=2048"`
-	Arguments []string `json:"arguments" binding:"required,dive,min=2,max=100"`
-	Type      string   `json:"type" enums:"embedded,related,absolute" binding:"required,oneof=embedded related absolute"`
-	Timeout   uint32   `json:"timeout" default:"1000" binding:"required"`
-}
+var jobList = []types.JobListItem{}
 
-type JobError struct {
-	Code        string `json:"code"`
-	Description string `json:"description"`
-}
-type JobResponse struct {
-	Status string    `json:"status" enums:"run,error,finish"`
-	Error  *JobError `json:"error,omitempty"`
-}
-
-type JobListItem struct {
-	Id        string       `json:"id"`
-	Payload   *JobRequest  `json:"payload"`
-	Result    *JobResponse `json:"result"`
-	CreatedAt int64        `json:"created_at"`
-}
-
-var jobList = []JobListItem{}
-
-func FindJobById(jobList []JobListItem, id string) *JobListItem {
+func FindJobById(jobList []types.JobListItem, id string) *types.JobListItem {
 	for _, job := range jobList {
 		if job.Id == id {
 			return &job
@@ -91,7 +69,7 @@ func FindJobById(jobList []JobListItem, id string) *JobListItem {
 	return nil
 }
 
-func GetJob(id string) *JobListItem {
+func GetJob(id string) *types.JobListItem {
 	fmt.Println("GetJob", id)
 	foundJob := FindJobById(jobList, id)
 	DumpJobList()
@@ -104,10 +82,15 @@ func DumpJobList() {
 	js, _ := json.Marshal(jobList)
 	fmt.Printf("json %+v\n", string(js))
 }
-func SetJob(job *JobRequest) bool {
+
+func SetJob(job *types.JobRequest) bool {
 	foundJob := FindJobById(jobList, job.Id)
 	if foundJob == nil {
-		jobList = append(jobList, JobListItem{Id: job.Id, Payload: job, CreatedAt: utils.GetUnixTimestamp()})
+		jobList = append(jobList, types.JobListItem{Id: job.Id, Payload: job, CreatedAt: utils.GetUnixTimestamp()})
+
+		foundJob := FindJobById(jobList, job.Id)
+		foundJob.Result = &types.JobResponse{Status: utils.JOB_STATUS_UNKNOWN}
+		go routine.ExecRoutine(foundJob)
 		return true
 	}
 	return false

@@ -1,24 +1,24 @@
 basePath: /
 definitions:
-  app.JobError:
+  types.JobError:
     properties:
       code:
         type: string
       description:
         type: string
     type: object
-  app.JobListItem:
+  types.JobListItem:
     properties:
       created_at:
         type: integer
       id:
         type: string
       payload:
-        $ref: '#/definitions/app.JobRequest'
+        $ref: '#/definitions/types.JobRequest'
       result:
-        $ref: '#/definitions/app.JobResponse'
+        $ref: '#/definitions/types.JobResponse'
     type: object
-  app.JobRequest:
+  types.JobRequest:
     properties:
       action:
         maxLength: 2048
@@ -48,10 +48,10 @@ definitions:
     - timeout
     - type
     type: object
-  app.JobResponse:
+  types.JobResponse:
     properties:
       error:
-        $ref: '#/definitions/app.JobError'
+        $ref: '#/definitions/types.JobError'
       status:
         enum:
         - run
@@ -92,7 +92,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/app.JobRequest'
+          $ref: '#/definitions/types.JobRequest'
       produces:
       - application/json
       responses:
@@ -122,7 +122,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/app.JobListItem'
+            $ref: '#/definitions/types.JobListItem'
       summary: Get job
       tags:
       - job

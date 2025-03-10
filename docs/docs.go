@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/app.JobRequest"
+                            "$ref": "#/definitions/types.JobRequest"
                         }
                     }
                 ],
@@ -87,7 +87,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/app.JobListItem"
+                            "$ref": "#/definitions/types.JobListItem"
                         }
                     }
                 }
@@ -95,7 +95,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "app.JobError": {
+        "types.JobError": {
             "type": "object",
             "properties": {
                 "code": {
@@ -106,7 +106,7 @@ const docTemplate = `{
                 }
             }
         },
-        "app.JobListItem": {
+        "types.JobListItem": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -116,14 +116,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "payload": {
-                    "$ref": "#/definitions/app.JobRequest"
+                    "$ref": "#/definitions/types.JobRequest"
                 },
                 "result": {
-                    "$ref": "#/definitions/app.JobResponse"
+                    "$ref": "#/definitions/types.JobResponse"
                 }
             }
         },
-        "app.JobRequest": {
+        "types.JobRequest": {
             "type": "object",
             "required": [
                 "action",
@@ -163,11 +163,11 @@ const docTemplate = `{
                 }
             }
         },
-        "app.JobResponse": {
+        "types.JobResponse": {
             "type": "object",
             "properties": {
                 "error": {
-                    "$ref": "#/definitions/app.JobError"
+                    "$ref": "#/definitions/types.JobError"
                 },
                 "status": {
                     "type": "string",
