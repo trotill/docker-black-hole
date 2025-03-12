@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"docker-black-hole/internal/routine"
 	"docker-black-hole/internal/types"
 	"docker-black-hole/internal/utils"
@@ -83,14 +84,14 @@ func DumpJobList() {
 	fmt.Printf("json %+v\n", string(js))
 }
 
-func SetJob(job *types.JobRequest) bool {
+func SetJob(job *types.JobRequest, goCtx context.Context) bool {
 	foundJob := FindJobById(jobList, job.Id)
 	if foundJob == nil {
 		jobList = append(jobList, types.JobListItem{Id: job.Id, Payload: job, CreatedAt: utils.GetUnixTimestamp()})
 
 		foundJob := FindJobById(jobList, job.Id)
 		foundJob.Result = &types.JobResponse{Status: utils.JOB_STATUS_UNKNOWN}
-		go routine.ExecRoutine(foundJob)
+		go routine.ExecRoutine(goCtx, foundJob)
 		return true
 	}
 	return false

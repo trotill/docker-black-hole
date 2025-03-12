@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"docker-black-hole/internal/types"
 	"docker-black-hole/internal/utils"
 	"github.com/doug-martin/goqu/v9"
@@ -27,14 +28,14 @@ func getUsersHandler(ctx *gin.Context, db *goqu.Database) {
 // @Success      201
 // @Failure      409 {object} utils.HttpError
 // @Router       /job [post]
-func SetJobController(ctx *gin.Context) {
+func SetJobController(ctx *gin.Context, goCtx context.Context) {
 	var json types.JobRequest
 	if err := ctx.ShouldBindBodyWithJSON(&json); err != nil {
 		utils.ErrorResponse(ctx, http.StatusBadRequest, utils.HttpError{Code: "validation", Description: "validation error", Validation: err})
 		return
 	}
 
-	if SetJob(&json) {
+	if SetJob(&json, goCtx) {
 		ctx.JSON(http.StatusCreated, nil)
 	} else {
 		utils.ErrorResponse(ctx, http.StatusConflict, utils.HttpError{Code: "jobExists", Description: "job already exists"})
@@ -59,10 +60,10 @@ func GetJobController(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, job)
 }
-func Controller(g *gin.Engine) {
+func Controller(g *gin.Engine, goCtx context.Context) {
 
 	g.POST("/job", func(ctx *gin.Context) {
-		SetJobController(ctx)
+		SetJobController(ctx, goCtx)
 	})
 
 	g.GET("/job/:id", func(ctx *gin.Context) {
