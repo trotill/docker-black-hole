@@ -16,8 +16,6 @@
 package main
 
 import (
-	"context"
-	//"github.com/doug-martin/goqu/v9"
 	_ "docker-black-hole/docs"
 	"docker-black-hole/internal/app"
 	"docker-black-hole/internal/swagger"
@@ -27,7 +25,6 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"time"
 )
 
 //TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
@@ -41,10 +38,9 @@ func main() {
 	}
 	ginCtx := gin.Default()
 	swagger.Controller(ginCtx)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	app.Controller(ginCtx, ctx)
+	app.Controller(ginCtx)
 
 	port := os.Getenv("PORT")
+
 	ginCtx.Run(":" + port)
 }

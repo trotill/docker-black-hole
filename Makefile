@@ -29,8 +29,8 @@ run: build
 	bin/${binary_name}
 
 ## run/live: run the application with reloading on file changes
-.PHONY: run/live
-run/live:
+.PHONY: dev
+dev:
 	bin/air \
 	--build.cmd "make build" --build.bin "./bin/${binary_name}" --build.delay "100" \
 	--build.exclude_dir "" \
