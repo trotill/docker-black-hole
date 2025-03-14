@@ -3,6 +3,7 @@ package routine
 import (
 	"bytes"
 	"context"
+	"docker-black-hole/internal/env"
 	"docker-black-hole/internal/types"
 	"docker-black-hole/internal/utils"
 	"fmt"
@@ -14,7 +15,8 @@ import (
 )
 
 func execute(ExecPath string, ExecArgs []string) types.JobResult {
-	timeout := 10 * time.Second
+	config := env.GetEnv()
+	timeout := time.Duration(config.ExecuteTimeoutSec * int(time.Second))
 	cmdCtx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -22,11 +24,15 @@ func execute(ExecPath string, ExecArgs []string) types.JobResult {
 	if len(ExecArgs) > 0 {
 		command += " " + strings.Join(ExecArgs, " ")
 	}
-
-	//cmd := exec.CommandContext(cmdCtx, "nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid", "bash", "-c", command)
-
-	cmd := exec.CommandContext(cmdCtx, "bash", "-c", command)
-
+	var cmd *exec.Cmd
+	if config.Docker == 1 {
+		cmd = exec.CommandContext(cmdCtx, "nsenter",
+			"-t", "1", "-m", "-u", "-i", "-n", "-p",
+			"su", "-", config.ExecuteFromUser, "-c",
+			"bash", "-c", command)
+	} else {
+		cmd = exec.CommandContext(cmdCtx, "bash", "-c", command)
+	}
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr

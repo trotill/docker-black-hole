@@ -1,6 +1,6 @@
-// @title           My API
+// @title           black hole API
 // @version         1.0
-// @description     This is a sample API with Swagger documentation.
+// @description     This is API with Swagger documentation.
 // @termsOfService  http://swagger.io/terms/
 
 // @contact.name   API Support
@@ -18,29 +18,20 @@ package main
 import (
 	_ "docker-black-hole/docs"
 	"docker-black-hole/internal/app"
+	"docker-black-hole/internal/env"
 	"docker-black-hole/internal/swagger"
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin/binding"
 	_ "github.com/go-playground/validator/v10"
-	"github.com/joho/godotenv"
 	"log"
-	"os"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-
 func main() {
-
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
-	}
+	config := env.GetEnv()
 	ginCtx := gin.Default()
 	swagger.Controller(ginCtx)
 	app.Controller(ginCtx)
-
-	port := os.Getenv("PORT")
-
-	ginCtx.Run(":" + port)
+	log.Printf("Execute from user %v\n", config.ExecuteFromUser)
+	log.Printf("Listening on %v\n", config.Port)
+	ginCtx.Run(":" + config.Port)
 }
