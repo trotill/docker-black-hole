@@ -8,10 +8,12 @@ import (
 )
 
 type Config struct {
-	Port              string `env:"PORT" envDefault:"9080"`
-	Docker            int    `env:"DOCKER" envDefault:"1"`
-	ExecuteFromUser   string `env:"EXECUTE_FROM_USER" envDefault:"root"`
-	ExecuteTimeoutSec int    `env:"EXECUTE_TIMEOUT_SEC" envDefault:"600"`
+	Port                 string `env:"PORT" envDefault:"9080"`
+	Docker               int    `env:"DOCKER" envDefault:"1"`
+	ExecuteFromUser      string `env:"EXECUTE_FROM_USER" envDefault:"root"`
+	ExecuteMaxTimeoutSec int    `env:"EXECUTE_MAX_TIMEOUT_SEC" envDefault:"600"`
+	ScriptPath           string `env:"SCRIPT_PATH" envDefault:"scripts"`
+	AllowAbsoluteMode    int    `env:"ALLOW_ABSOLUTE_MODE" envDefault:"0"`
 }
 
 var cfg = Config{}

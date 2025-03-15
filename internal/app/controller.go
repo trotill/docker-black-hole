@@ -25,7 +25,7 @@ func SetJobController(ctx *gin.Context) {
 	}
 
 	if SetJob(&json) {
-		ctx.JSON(http.StatusCreated, nil)
+		ctx.Status(http.StatusCreated)
 	} else {
 		utils.ErrorResponse(ctx, http.StatusConflict, utils.HttpError{Code: "jobExists", Description: "job already exists"})
 	}

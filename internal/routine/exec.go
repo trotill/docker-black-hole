@@ -6,7 +6,6 @@ import (
 	"docker-black-hole/internal/env"
 	"docker-black-hole/internal/types"
 	"docker-black-hole/internal/utils"
-	"fmt"
 	"log"
 	"os/exec"
 	"path/filepath"
@@ -14,15 +13,24 @@ import (
 	"time"
 )
 
-func execute(ExecPath string, ExecArgs []string) types.JobResult {
+func execute(payload *types.ExecRequest) types.JobResult {
+	execPath := payload.Path
+	execArgs := payload.Args
+
 	config := env.GetEnv()
-	timeout := time.Duration(config.ExecuteTimeoutSec * int(time.Second))
+	var timeout time.Duration
+	if (payload.Timeout == 0) || (int(payload.Timeout) > config.ExecuteMaxTimeoutSec) {
+		timeout = time.Duration(config.ExecuteMaxTimeoutSec * int(time.Second))
+	} else {
+		timeout = time.Duration(int(payload.Timeout) * int(time.Second))
+	}
+
 	cmdCtx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	command := ExecPath
-	if len(ExecArgs) > 0 {
-		command += " " + strings.Join(ExecArgs, " ")
+	command := execPath
+	if len(execArgs) > 0 {
+		command += " " + strings.Join(execArgs, " ")
 	}
 	var cmd *exec.Cmd
 	if config.Docker == 1 {
@@ -41,12 +49,12 @@ func execute(ExecPath string, ExecArgs []string) types.JobResult {
 	if runErr != nil {
 		if exitError, ok := runErr.(*exec.ExitError); ok {
 			exitCode = exitError.ExitCode()
-			log.Printf("Terminated <%+v %+v> with exit code %d\n", ExecPath, ExecArgs, exitCode)
+			log.Printf("Terminated <%+v %+v> with exit code %d\n", execPath, execArgs, exitCode)
 		} else {
-			log.Printf("Error run command <%v %v> %v\n", ExecPath, ExecArgs, runErr)
+			log.Printf("Error run command <%v %v> %v\n", execPath, execArgs, runErr)
 		}
 	} else {
-		log.Printf("Finish <%+v %+v>\n", ExecPath, ExecArgs)
+		log.Printf("Finish <%+v %+v>\n", execPath, execArgs)
 	}
 	result := types.JobResult{}
 	result.Stderr = stderr.String()
@@ -56,42 +64,34 @@ func execute(ExecPath string, ExecArgs []string) types.JobResult {
 }
 
 func RunAbsolute(job *types.JobListItem) {
-	result := execute(job.Payload.Action, job.Payload.Arguments)
+	execParam := &types.ExecRequest{Path: job.Payload.Action, Args: job.Payload.Arguments, Timeout: job.Payload.Timeout}
+	result := execute(execParam)
 	job.Result.Result = &result
 }
 
 func RunRelated(job *types.JobListItem) {
 	basename := filepath.Base(job.Payload.Action)
-	path := "/opt/" + basename
-	result := execute(path, job.Payload.Arguments)
+	config := env.GetEnv()
+	path := config.ScriptPath + basename
+	execParam := &types.ExecRequest{Path: path, Args: job.Payload.Arguments, Timeout: job.Payload.Timeout}
+	result := execute(execParam)
 
 	job.Result.Result = &result
 }
-func RunEmbedded(job *types.JobListItem) {
-	switch utils.EmbeddedActions(job.Payload.Action) {
-	case utils.RebootHost:
-		fmt.Println("Embedded:RebootHost")
-	case utils.ComposeRestart:
-		fmt.Println("Embedded:ComposeRestart")
-	case utils.DockerRestart:
-		fmt.Println("Embedded:DockerRestart")
-	default:
-		fmt.Println("Embedded:Unknown")
-	}
 
-	fmt.Printf("End %s\n", job.Payload.Action)
-}
 func ExecRoutine(job *types.JobListItem) {
-
+	config := env.GetEnv()
 	job.Result.Status = utils.JOB_STATUS_RUN
 	switch job.Payload.Type {
-	case utils.JOB_TYPE_EMBEDDED:
-		RunEmbedded(job)
-		job.Result.Status = utils.JOB_STATUS_FINISH
 	case utils.JOB_TYPE_RELATED:
 		RunRelated(job)
 		job.Result.Status = utils.JOB_STATUS_FINISH
 	case utils.JOB_TYPE_ABSOLUTE:
+		if config.AllowAbsoluteMode != 1 {
+			job.Result.Status = utils.JOB_STATUS_ERROR
+			job.Result.Error = &types.JobError{Code: "restrictedType", Description: "restricted type"}
+			break
+		}
 		RunAbsolute(job)
 		job.Result.Status = utils.JOB_STATUS_FINISH
 	default:
