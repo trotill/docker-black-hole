@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample API with Swagger documentation.",
-        "title": "My API",
+        "description": "This is API with Swagger documentation.",
+        "title": "black hole API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
@@ -150,7 +150,6 @@
                 "type": {
                     "type": "string",
                     "enum": [
-                        "embedded",
                         "related",
                         "absolute"
                     ]
@@ -163,6 +162,9 @@
                 "error": {
                     "$ref": "#/definitions/types.JobError"
                 },
+                "result": {
+                    "$ref": "#/definitions/types.JobResult"
+                },
                 "status": {
                     "type": "string",
                     "enum": [
@@ -170,6 +172,20 @@
                         "error",
                         "finish"
                     ]
+                }
+            }
+        },
+        "types.JobResult": {
+            "type": "object",
+            "properties": {
+                "exit_code": {
+                    "type": "integer"
+                },
+                "stderr": {
+                    "type": "string"
+                },
+                "stdout": {
+                    "type": "string"
                 }
             }
         },

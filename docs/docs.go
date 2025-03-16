@@ -156,7 +156,6 @@ const docTemplate = `{
                 "type": {
                     "type": "string",
                     "enum": [
-                        "embedded",
                         "related",
                         "absolute"
                     ]
@@ -169,6 +168,9 @@ const docTemplate = `{
                 "error": {
                     "$ref": "#/definitions/types.JobError"
                 },
+                "result": {
+                    "$ref": "#/definitions/types.JobResult"
+                },
                 "status": {
                     "type": "string",
                     "enum": [
@@ -176,6 +178,20 @@ const docTemplate = `{
                         "error",
                         "finish"
                     ]
+                }
+            }
+        },
+        "types.JobResult": {
+            "type": "object",
+            "properties": {
+                "exit_code": {
+                    "type": "integer"
+                },
+                "stderr": {
+                    "type": "string"
+                },
+                "stdout": {
+                    "type": "string"
                 }
             }
         },
@@ -200,8 +216,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:9080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "My API",
-	Description:      "This is a sample API with Swagger documentation.",
+	Title:            "black hole API",
+	Description:      "This is API with Swagger documentation.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -1,7 +1,7 @@
 GO := $(shell which go)
 
-main_package_path = ./cmd/mvcApp
-binary_name = docker-black-hole
+main_package_path = ./cmd/blackHole
+binary_name = blackHole
 
 # ==================================================================================== #
 # HELPERS
@@ -55,5 +55,5 @@ tidy:
 ## generate swagger
 .PHONY: swagger
 swagger:
-	swag init -g cmd/mvcApp/mvcApp.go
+	swag init -g cmd/blackHole/blackHole.go
 

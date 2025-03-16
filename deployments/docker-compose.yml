@@ -1,19 +1,9 @@
 version: '3.8'
 
 services:
-  myrest_postgres:
-    container_name: myrest_postgres
-    image: postgres:15
-    env_file:
-      - ../.env
-    ports:
-      - "${POSTGRES_PORT}:5432"
-    volumes:
-      - pgdata_myrest:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
-      interval: 3s
-      timeout: 5s
-      retries: 5
-volumes:
-    pgdata_myrest:
+  blackHole:
+    container_name: blackHole
+    build:
+      dockerfile: deployments/Dockerfile
+      args:
+        BRANCH: develop

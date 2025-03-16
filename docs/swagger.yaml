@@ -37,7 +37,6 @@ definitions:
         type: integer
       type:
         enum:
-        - embedded
         - related
         - absolute
         type: string
@@ -52,11 +51,22 @@ definitions:
     properties:
       error:
         $ref: '#/definitions/types.JobError'
+      result:
+        $ref: '#/definitions/types.JobResult'
       status:
         enum:
         - run
         - error
         - finish
+        type: string
+    type: object
+  types.JobResult:
+    properties:
+      exit_code:
+        type: integer
+      stderr:
+        type: string
+      stdout:
         type: string
     type: object
   utils.HttpError:
@@ -73,12 +83,12 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: This is a sample API with Swagger documentation.
+  description: This is API with Swagger documentation.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: My API
+  title: black hole API
   version: "1.0"
 paths:
   /job:
