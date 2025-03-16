@@ -1,9 +1,15 @@
 version: '3.8'
 
 services:
-  blackHole:
-    container_name: blackHole
+  black_hole:
+    container_name: black_hole
+    image: monkeyhouse1/black_hole:${TAG:-latest}
+    privileged: true
+    pid: host
+    ports:
+      - "9080:9080"
+    env_file: ${ENV_FILE}
     build:
-      dockerfile: deployments/Dockerfile
+      dockerfile: Dockerfile
       args:
         BRANCH: develop

@@ -1,5 +1,5 @@
 GO := $(shell which go)
-
+IMAGE_TAG := 0.1.0
 main_package_path = ./cmd/blackHole
 binary_name = blackHole
 
@@ -40,12 +40,17 @@ dev:
 ## up.dev: run docker compose
 .PHONY: up.dev
 up.dev:
-	docker compose --env-file .env -f deployments/docker-compose.yml up -d
+	TAG=$(IMAGE_TAG) ENV_FILE=../.env docker compose -f deployments/docker-compose.yml up -d
+
+## up.dev: run docker compose
+.PHONY: push.dev
+push.dev:
+	TAG=$(IMAGE_TAG) ENV_FILE=../.env docker compose -f deployments/docker-compose.yml push
 
 ## down.dev: stop docker compose
 .PHONY: down.dev
 down.dev:
-	docker compose --env-file .env -f deployments/docker-compose.yml down
+	TAG=$(IMAGE_TAG) ENV_FILE=../.env docker compose -f deployments/docker-compose.yml down
 
 ## tidy: resync modules
 .PHONY: tidy
