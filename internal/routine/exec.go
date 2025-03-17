@@ -33,14 +33,16 @@ func execute(payload *types.ExecRequest) types.JobResult {
 		command += " " + strings.Join(execArgs, " ")
 	}
 	var cmd *exec.Cmd
+
 	if config.Docker == 1 {
 		cmd = exec.CommandContext(cmdCtx, "nsenter",
 			"-t", "1", "-m", "-u", "-i", "-n", "-p",
 			"su", "-", config.ExecuteFromUser, "-c",
-			"bash", "-c", command)
+			config.ShellPath, "-c", command)
 	} else {
-		cmd = exec.CommandContext(cmdCtx, "bash", "-c", command)
+		cmd = exec.CommandContext(cmdCtx, config.ShellPath, "-c", command)
 	}
+	log.Printf("cmd: %v\n", cmd.String())
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr

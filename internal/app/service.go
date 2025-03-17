@@ -11,7 +11,6 @@ import (
 var jobList map[string]*types.JobListItem
 
 func GetJob(id string) *types.JobListItem {
-	fmt.Println("GetJob", id)
 	//DumpJobList()
 	return JobMap.GetJob(id)
 }

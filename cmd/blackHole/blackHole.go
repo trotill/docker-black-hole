@@ -23,12 +23,18 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin/binding"
 	_ "github.com/go-playground/validator/v10"
+	"io"
 	"log"
 )
 
 func main() {
 	config := env.GetEnv()
+	if config.DisableLogs != 0 {
+		log.SetOutput(io.Discard)
+		gin.DefaultWriter = io.Discard
+	}
 	ginCtx := gin.Default()
+
 	swagger.Controller(ginCtx)
 	app.Controller(ginCtx)
 	log.Printf("Execute from user %v\n", config.ExecuteFromUser)

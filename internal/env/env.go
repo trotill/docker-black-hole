@@ -14,6 +14,8 @@ type Config struct {
 	ExecuteMaxTimeoutSec int    `env:"EXECUTE_MAX_TIMEOUT_SEC" envDefault:"600"`
 	ScriptPath           string `env:"SCRIPT_PATH" envDefault:"scripts"`
 	AllowAbsoluteMode    int    `env:"ALLOW_ABSOLUTE_MODE" envDefault:"0"`
+	ShellPath            string `env:"SHELL_PATH" envDefault:"bash"`
+	DisableLogs          int    `env:"DISABLE_LOGS" envDefault:"0"`
 }
 
 var cfg = Config{}

@@ -2,7 +2,7 @@ package app
 
 import (
 	"docker-black-hole/internal/types"
-	"fmt"
+	"log"
 	"sync"
 )
 
@@ -40,5 +40,5 @@ func (jMap JobMapType) GetAllJobs() map[string]*types.JobListItem {
 func (jMap JobMapType) Dump() {
 	jMap.RLock()
 	defer jMap.RUnlock()
-	fmt.Printf("MAP %+v\n", jMap.m)
+	log.Printf("MAP %+v\n", jMap.m)
 }
