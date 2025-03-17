@@ -6,9 +6,8 @@ get_disk_info() {
     NR==1 {next}
     {
         isRoot = ($4 == "/") ? "true" : "false"; # Проверяем, является ли раздел корневым
+        if (NR > 2) printf "," # Добавляем запятую между объектами, кроме последнего
         printf "{\"filesystem\": \"%s\", \"totalSize\": \"%s\", \"available\": \"%s\", \"isRoot\": %s}", $1, $2, $3, isRoot
-        if (NR < FNR) printf "," # Добавляем запятую между объектами, кроме последнего
-        printf "\n"
     }' | awk 'BEGIN {print "["} {print} END {print "]"}'
 }
 
