@@ -16,6 +16,8 @@ docker pull monkeyhouse1/black_hole:<version>, e.g. docker pull monkeyhouse1/bla
 ```
 
 Copy .env.example to .env, specify your settings, put the file in docker compose or docker.  
+If the .env file is missing, the application will take the variables from the environment variables.
+
 Example of running under docker
 ```
 docker run -p 9080:9080 --pid host --privileged --env-file ./.env --name "blh-service" monkeyhouse1/black_hole:0.1.0
@@ -34,7 +36,25 @@ Example of use in docker-compose
        - "9080"
      restart: unless-stopped
 ```
-
+OR
+```
+   blh-service:
+     container_name: blh-service
+     image: monkeyhouse1/black_hole:0.1.0
+     privileged: true
+     pid: host
+     environment:
+       PORT=9080
+       DOCKER=0
+       EXECUTE_MAX_TIMEOUT_SEC=600
+       SCRIPT_PATH=/home/ivan/work/golang/docker-black-hole/scripts/
+       ALLOW_ABSOLUTE_MODE=1
+       EXECUTE_FROM_USER=ivan
+       SHELL_PATH=/usr/bin/sh
+     expose:
+       - "9080"
+     restart: unless-stopped
+```
 # Safety
 Safety is ensured by the following:
 - only one service is running in privileged mode, which is minimalistic and has only a few endpoints,
