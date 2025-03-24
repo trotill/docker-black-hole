@@ -104,3 +104,15 @@ SHELL_PATH. Shell path, bash for default (bash default)
 ```
 SHELL_PATH=/usr/bin/sh
 ```
+
+# REST
+
+The app provides 2 endpoints for interaction.  
+POST -> Job to run the task (RunJob)  
+GET -> Job/{ID} to get the state of the task (GetJob).
+
+The endpoints fields are described in detail in the swagger file.
+
+Interaction logic.  
+A RunJob execution request is sent, then GetJob is executed at intervals until the state is set to finish or error  
+As soon as the finish status is received, the result is analysed

@@ -13,11 +13,7 @@ const docTemplate = `{
         "contact": {
             "name": "API Support",
             "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            "email": "monkeyhouse@mail.ru"
         },
         "version": "{{.Version}}"
     },
@@ -99,9 +95,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "The error code of the job",
                     "type": "string"
                 },
                 "description": {
+                    "description": "The error description of the job",
                     "type": "string"
                 }
             }
@@ -110,16 +108,28 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
+                    "description": "Job create time",
                     "type": "integer"
                 },
                 "id": {
+                    "description": "Job ID",
                     "type": "string"
                 },
                 "payload": {
-                    "$ref": "#/definitions/types.JobRequest"
+                    "description": "Job request",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.JobRequest"
+                        }
+                    ]
                 },
                 "result": {
-                    "$ref": "#/definitions/types.JobResponse"
+                    "description": "Job result",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.JobResponse"
+                        }
+                    ]
                 }
             }
         },
@@ -134,26 +144,31 @@ const docTemplate = `{
             ],
             "properties": {
                 "action": {
+                    "description": "The name of the application/script or the path to the application/script. If ALLOW_ABSOLUTE_MODE=0, the path is replaced by SCRIPT_PATH\nexample: ls",
                     "type": "string",
                     "maxLength": 2048,
                     "minLength": 1
                 },
                 "arguments": {
+                    "description": "Array of application/script string arguments\nexample: [\"-la\"]",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "id": {
+                    "description": "Job ID. If more than one application is running at the same time, the job ID is used to separate their responses\nexample: myLs",
                     "type": "string",
                     "maxLength": 100,
                     "minLength": 2
                 },
                 "timeout": {
+                    "description": "Maximum execution time (in seconds)\nexample: 60",
                     "type": "integer",
                     "default": 1000
                 },
                 "type": {
+                    "description": "Execution method, by absolute path or from SCRIPT_PATH folder\nexample: \"absolute\"",
                     "type": "string",
                     "enum": [
                         "related",
@@ -166,12 +181,23 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "error": {
-                    "$ref": "#/definitions/types.JobError"
+                    "description": "The error of the job execution",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.JobError"
+                        }
+                    ]
                 },
                 "result": {
-                    "$ref": "#/definitions/types.JobResult"
+                    "description": "The result of the job execution",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/types.JobResult"
+                        }
+                    ]
                 },
                 "status": {
+                    "description": "The status of the job\nexample: finish",
                     "type": "string",
                     "enum": [
                         "run",
@@ -185,12 +211,15 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "exit_code": {
+                    "description": "Job exit code",
                     "type": "integer"
                 },
                 "stderr": {
+                    "description": "Job stderr",
                     "type": "string"
                 },
                 "stdout": {
+                    "description": "Job stdout",
                     "type": "string"
                 }
             }

@@ -3,39 +3,62 @@ definitions:
   types.JobError:
     properties:
       code:
+        description: The error code of the job
         type: string
       description:
+        description: The error description of the job
         type: string
     type: object
   types.JobListItem:
     properties:
       created_at:
+        description: Job create time
         type: integer
       id:
+        description: Job ID
         type: string
       payload:
-        $ref: '#/definitions/types.JobRequest'
+        allOf:
+        - $ref: '#/definitions/types.JobRequest'
+        description: Job request
       result:
-        $ref: '#/definitions/types.JobResponse'
+        allOf:
+        - $ref: '#/definitions/types.JobResponse'
+        description: Job result
     type: object
   types.JobRequest:
     properties:
       action:
+        description: |-
+          The name of the application/script or the path to the application/script. If ALLOW_ABSOLUTE_MODE=0, the path is replaced by SCRIPT_PATH
+          example: ls
         maxLength: 2048
         minLength: 1
         type: string
       arguments:
+        description: |-
+          Array of application/script string arguments
+          example: ["-la"]
         items:
           type: string
         type: array
       id:
+        description: |-
+          Job ID. If more than one application is running at the same time, the job ID is used to separate their responses
+          example: myLs
         maxLength: 100
         minLength: 2
         type: string
       timeout:
         default: 1000
+        description: |-
+          Maximum execution time (in seconds)
+          example: 60
         type: integer
       type:
+        description: |-
+          Execution method, by absolute path or from SCRIPT_PATH folder
+          example: "absolute"
         enum:
         - related
         - absolute
@@ -50,10 +73,17 @@ definitions:
   types.JobResponse:
     properties:
       error:
-        $ref: '#/definitions/types.JobError'
+        allOf:
+        - $ref: '#/definitions/types.JobError'
+        description: The error of the job execution
       result:
-        $ref: '#/definitions/types.JobResult'
+        allOf:
+        - $ref: '#/definitions/types.JobResult'
+        description: The result of the job execution
       status:
+        description: |-
+          The status of the job
+          example: finish
         enum:
         - run
         - error
@@ -63,10 +93,13 @@ definitions:
   types.JobResult:
     properties:
       exit_code:
+        description: Job exit code
         type: integer
       stderr:
+        description: Job stderr
         type: string
       stdout:
+        description: Job stdout
         type: string
     type: object
   utils.HttpError:
@@ -80,13 +113,10 @@ definitions:
 host: localhost:9080
 info:
   contact:
-    email: support@swagger.io
+    email: monkeyhouse@mail.ru
     name: API Support
     url: http://www.swagger.io/support
   description: This is API with Swagger documentation.
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
   title: black hole API
   version: "1.0"
