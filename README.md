@@ -1,5 +1,7 @@
 # Docker Black Hole (DBH)
-The service provides a secure way for services in the docker-compose environment to communicate with the external environment. The service has its own REST API and swagger file, with the help of which neighbouring services can execute scripts and applications outside the docker-compose environment. Common application examples:
+The service provides a secure way for services in the docker-compose environment to communicate with the external environment. The service has its own REST API and swagger file, with the help of which neighbouring services can execute scripts and applications outside the docker-compose environment.  
+
+Common application examples:
 - rebooting or shutting down a VDS
 - obtaining complete information about the host system,
 - manipulating the graphical environment with utilities,
